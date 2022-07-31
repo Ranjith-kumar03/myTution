@@ -1,9 +1,12 @@
-const Post = require("../models/post");
+const Student = require("../models/post");
 
 exports.createPost = (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
-  const post = new Post({
-    title: req.body.title,
+  const post = new Student({
+    name: req.body.name,
+    age: req.body.age,
+    gender: req.body.gender,
+    timing: req.body.timing,
     content: req.body.content,
     imagePath: url + "/images/" + req.file.filename,
     creator: req.userData.userId
@@ -13,7 +16,7 @@ exports.createPost = (req, res, next) => {
     .save()
     .then(createdPost => {
       res.status(201).json({
-        message: "Post added successfully",
+        message: "Student added successfully",
         post: {
           ...createdPost,
           id: createdPost._id
@@ -28,19 +31,31 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.updatePost = (req, res, next) => {
-  let imagePath = req.body.imagePath;
+  let imagePath;
+  console.log("see first image path",imagePath)
   if (req.file) {
     const url = req.protocol + "://" + req.get("host");
     imagePath = url + "/images/" + req.file.filename;
+
+  }else{
+    imagePath = req.body.imagePath;
   }
-  const post = new Post({
-    _id: req.body.id,
-    title: req.body.title,
+
+  const student = {
+   // _id: req.body.id,
+    // title: req.body.title,
+    // content: req.body.content,
+    name: req.body.name,
+    age: req.body.age,
+    gender: req.body.gender,
+    timing: req.body.timing,
     content: req.body.content,
     imagePath: imagePath,
     creator: req.userData.userId
-  });
-  Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post)
+  };
+  console.log("see the updated student",student)
+
+  Student.updateOne({ _id: req.params.id, creator: req.userData.userId }, student)
     .then(result => {
       if (result.n > 0) {
         res.status(200).json({ message: "Update successful!" });
@@ -49,28 +64,32 @@ exports.updatePost = (req, res, next) => {
       }
     })
     .catch(error => {
+      console.log("see the error",error)
       res.status(500).json({
+
         message: "Couldn't udpate post!"
       });
+
     });
 };
 
 exports.getPosts = (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
-  const postQuery = Post.find();
+  const postQuery = Student.find();
   let fetchedPosts;
   if (pageSize && currentPage) {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
   postQuery
     .then(documents => {
+      console.log("see the students",documents)
       fetchedPosts = documents;
-      return Post.count();
+      return Student.count();
     })
     .then(count => {
       res.status(200).json({
-        message: "Posts fetched successfully!",
+        message: "Students fetched successfully!",
         posts: fetchedPosts,
         maxPosts: count
       });
@@ -83,12 +102,12 @@ exports.getPosts = (req, res, next) => {
 };
 
 exports.getPost = (req, res, next) => {
-  Post.findById(req.params.id)
+  Student.findById(req.params.id)
     .then(post => {
       if (post) {
         res.status(200).json(post);
       } else {
-        res.status(404).json({ message: "Post not found!" });
+        res.status(404).json({ message: "Student not found!" });
       }
     })
     .catch(error => {
@@ -99,7 +118,7 @@ exports.getPost = (req, res, next) => {
 };
 
 exports.deletePost = (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+  Student.deleteOne({ _id: req.params.id, creator: req.userData.userId })
     .then(result => {
       console.log(result);
       if (result.n > 0) {

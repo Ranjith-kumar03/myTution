@@ -2,20 +2,33 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!isLoading">
     <mat-form-field>
-      <input matInput type="text" formControlName="title" placeholder="Post Title">
-      <mat-error *ngIf="form.get('title')?.invalid">Please enter a post title.</mat-error>
+      <input matInput type="text" formControlName="name" placeholder="Please enter a Student Name.">
+      <mat-error *ngIf="form.get('name')?.invalid">Please enter a Student Name.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" formControlName="age" placeholder="Please enter a Student Age.">
+      <mat-error *ngIf="form.get('age')?.invalid">Please enter a Student Age.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" formControlName="gender" placeholder="Please enter a Student Gender.">
+      <mat-error *ngIf="form.get('gender')?.invalid">Please enter a Student Gender.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" formControlName="timing" placeholder="Please enter a Student Tution Timing.">
+      <mat-error *ngIf="form.get('timing')?.invalid">Please enter a Student Tution Timing.</mat-error>
     </mat-form-field>
     <div>
-      <button mat-stroked-button type="button" (click)="filePicker.click()">Pick Image</button>
+      <button mat-stroked-button type="button" (click)="filePicker.click()">Pick Student Photo</button>
       <input type="file" #filePicker (change)="onImagePicked($event)">
     </div>
+
     <div class="image-preview" *ngIf="imagePreview !== '' && imagePreview && form.get('image')?.valid">
-      <img [src]="imagePreview" [alt]="form.value.title">
+      <img [src]="imagePreview" [alt]="form.value.name">
     </div>
     <mat-form-field>
-      <textarea matInput rows="4" formControlName="content" placeholder="Post Content"></textarea>
-      <mat-error *ngIf="form.get('content')?.invalid">Please enter a post title.</mat-error>
+      <textarea matInput rows="4" formControlName="content" placeholder="Please enter Student Details."></textarea>
+      <mat-error *ngIf="form.get('content')?.invalid">Please enter Student Details.</mat-error>
     </mat-form-field>
-    <button mat-raised-button color="accent" type="submit">Save Post</button>
+    <button mat-raised-button color="accent" type="submit">Save Student Details</button>
   </form>
 </mat-card>

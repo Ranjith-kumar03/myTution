@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import {PageEvent} from '@angular/material/paginator';
 import { Subscription } from "rxjs";
 
-import { Post } from "../post.model";
+import { Student } from "../post.model";
 import { PostsService } from "../posts.service";
 import { AuthService } from "../../auth/auth.service";
 
@@ -17,7 +17,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   //   { title: "Second Post", content: "This is the second post's content" },
   //   { title: "Third Post", content: "This is the third post's content" }
   // ];
-  posts: Post[] = [];
+  posts: Student [] = [];
   isLoading = false;
   totalPosts = 0;
   postsPerPage = 2;
@@ -39,7 +39,8 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.userId = this.authService.getUserId();
     this.postsSub = this.postsService
       .getPostUpdateListener()
-      .subscribe((postData: { posts: Post[]; postCount: number }) => {
+      .subscribe((postData: { posts: Student []; postCount: number }) => {
+        console.log("see the posts",postData.posts)
         this.isLoading = false;
         this.totalPosts = postData.postCount;
         this.posts = postData.posts;

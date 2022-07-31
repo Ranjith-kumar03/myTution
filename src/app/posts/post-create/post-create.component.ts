@@ -4,7 +4,7 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Subscription } from "rxjs";
 
 import { PostsService } from "../posts.service";
-import { Post } from "../post.model";
+import { Student } from "../post.model";
 import { mimeType } from "./mime-type.validator";
 import { AuthService } from "../../auth/auth.service";
 //import { usernameValidator } from "./mime-type.validator";
@@ -17,7 +17,7 @@ import { AuthService } from "../../auth/auth.service";
 export class PostCreateComponent implements OnInit, OnDestroy {
   enteredTitle = "";
   enteredContent = "";
-  post!: Post;
+  student!: Student;
   isLoading = false;
   form!: FormGroup;
   imagePreview!: string;
@@ -38,8 +38,17 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       });
     this.form = new FormGroup({
-      title: new FormControl(null, {
+      name: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
+      }),
+      age: new FormControl(null, {
+        validators: [Validators.required, ]
+      }),
+      gender: new FormControl(null, {
+        validators: [Validators.required, ]
+      }),
+      timing: new FormControl(null, {
+        validators: [Validators.required, ]
       }),
       content: new FormControl(null, { validators: [Validators.required] }),
       image: new FormControl(null, {
@@ -52,20 +61,29 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.mode = "edit";
         this.postId = paramMap?.get("postId");
         this.isLoading = true;
-        this.postsService.getPost(this.postId).subscribe(postData => {
+        this.postsService.getPost(this.postId).subscribe(student => {
           this.isLoading = false;
-          this.post = {
-            id: postData._id,
-            title: postData.title,
-            content: postData.content,
-            imagePath: postData.imagePath,
-            creator: postData.creator
+          console.log("see the student detail",student)
+          this.student = {
+            name: student.name,
+                age: student.age,
+                gender: student.gender,
+                timing:student.timing,
+                content: student.content,
+                id: student._id,
+                imagePath: student.imagePath,
+                creator: student.creator
           };
           this.form.setValue({
-            title: this.post.title,
-            content: this.post.content,
-            image: this.post.imagePath
+                name: this.student.name,
+                age: this.student.age,
+                gender: this.student.gender,
+                timing:this.student.timing,
+                content: this.student.content,
+                image: this.student.imagePath,
+
           });
+          this.imagePreview=this.student.imagePath
         });
       } else {
         this.mode = "create";
@@ -92,17 +110,26 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     if (this.mode === "create") {
       this.postsService.addPost(
-        this.form.value.title,
+        this.form.value.name,
+        this.form.value.age,
+        this.form.value.gender,
+        this.form.value.timing,
         this.form.value.content,
         this.form.value.image
       );
     } else {
+      console.log("ami in update")
       this.postsService.updatePost(
+
         this.postId,
-        this.form.value.title,
+        this.form.value.name,
+        this.form.value.age,
+        this.form.value.gender,
+        this.form.value.timing,
         this.form.value.content,
         this.form.value.image
       );
+      console.log("we are updating")
     }
     this.form.reset();
   }

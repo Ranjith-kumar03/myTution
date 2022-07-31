@@ -1,18 +1,18 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Subject } from "rxjs";
-import { map } from "rxjs/operators";
-import { Router } from "@angular/router";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
-import { environment } from "../../environments/environment";
-import { Post } from "./post.model";
+import { environment } from '../../environments/environment';
+import { Student } from './post.model';
 
-const BACKEND_URL = environment.apiUrl + "/posts/";
+const BACKEND_URL = environment.apiUrl + '/posts/';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class PostsService {
-  private posts: Post[] = [];
-  private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
+  private posts: Student[] = [];
+  private postsUpdated = new Subject<{ posts: Student[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -23,26 +23,29 @@ export class PostsService {
         BACKEND_URL + queryParams
       )
       .pipe(
-        map(postData => {
+        map((postData) => {
           return {
-            posts: postData.posts.map((post:any) => {
+            posts: postData.posts.map((student: any) => {
               return {
-                title: post.title,
-                content: post.content,
-                id: post._id,
-                imagePath: post.imagePath,
-                creator: post.creator
+                name: student.name,
+                age: student.age,
+                gender: student.gender,
+                timing: student.timing,
+                content: student.content,
+                id: student._id,
+                imagePath: student.imagePath,
+                creator: student.creator,
               };
             }),
-            maxPosts: postData.maxPosts
+            maxPosts: postData.maxPosts,
           };
         })
       )
-      .subscribe(transformedPostData => {
+      .subscribe((transformedPostData) => {
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
           posts: [...this.posts],
-          postCount: transformedPostData.maxPosts
+          postCount: transformedPostData.maxPosts,
         });
       });
   }
@@ -54,43 +57,64 @@ export class PostsService {
   getPost(id: string) {
     return this.http.get<{
       _id: string;
-      title: string;
+      name: string;
+      age: string;
+      gender: string;
+      timing: string;
       content: string;
       imagePath: string;
       creator: string;
     }>(BACKEND_URL + id);
   }
 
-  addPost(title: string, content: string, image: File) {
+  addPost(
+    name: string,
+    age: string,
+    gender: string,
+    timing: string,
+    content: string,
+    image: File
+  ) {
     const postData = new FormData();
-    postData.append("title", title);
-    postData.append("content", content);
-    postData.append("image", image, title);
+    postData.append('name', name);
+    postData.append('age', age);
+    postData.append('gender', gender);
+    postData.append('timing', timing);
+    postData.append('content', content);
+    postData.append('image', image, name);
     this.http
-      .post<{ message: string; post: Post }>(
-        BACKEND_URL,
-        postData
-      )
-      .subscribe(responseData => {
-        this.router.navigate(["/"]);
+      .post<{ message: string; post: Student }>(BACKEND_URL, postData)
+      .subscribe((responseData) => {
+        this.router.navigate(['/']);
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
-    let postData: Post | FormData;
+  updatePost(id: string,  name: string,
+    age: string,
+    gender: string,
+    timing: string,
+    content: string,
+     image: File) {
+    let postData: Student | FormData;
     if (typeof image === "object") {
       postData = new FormData();
-      postData.append("id", id);
-      postData.append("title", title);
-      postData.append("content", content);
-      postData.append("image", image, title);
+      postData.append('name', name);
+    postData.append('age', age);
+    postData.append('gender', gender);
+    postData.append('timing', timing);
+    postData.append('content', content);
+    postData.append('image', image, name);
     } else {
       postData = {
         id: id,
-        title: title,
-        content: content,
-        imagePath: image,
-        creator: ''
+         name: name,
+      age: age,
+      gender: gender,
+      timing: timing,
+      content: content,
+      imagePath : image,
+      creator: ''
+
       };
     }
     this.http
